@@ -50,6 +50,23 @@ class ACNHInjector:
         return (INVENTORY_BASES[block]
                 + PLAYER_SPACING * (player - 1)
                 + SLOT_STRIDE * index)
+    
+    def parse_item(self, item: int | str) -> int:
+        """Accept an int or a hex string like '0x21FE', '21FE' or '0x00020000000A1234'."""
+        if isinstance(item, bool):
+            raise ValueError("item must be an int or hex string")
+        if isinstance(item, int):
+            value = item
+        elif isinstance(item, str):
+            try:
+                value = int(item.strip(), 16)
+            except ValueError:
+                raise ValueError(f"Invalid item hex code: {item!r}") from None
+        else:
+            raise ValueError(f"Unsupported item type: {type(item).__name__}")
+        if not 0 <= value <= MAX_ITEM:
+            raise ValueError(f"Item {item!r} must fit in 64 bits (up to 16 hex digits)")
+        return value
 
     def _write_items(self, player: int, items: list[int]) -> None:
         """One poke per 20-slot block instead of one per slot."""
@@ -65,13 +82,15 @@ class ACNHInjector:
             data = b"".join(struct.pack("<Q", i) for i in chunk)  # 8 bytes/slot
             self.bot.Ram.poke(self.slot_address(player, start), data)
     # ---- public API ----
-    def inject_items(self, player: int, item_hex_codes: list[int]) -> None:
-        self._write_items(player, list(item_hex_codes))
-        print(f"[+] Injected {len(item_hex_codes)} items into player {player}")
+    def inject_items(self, player: int, item_hex_codes: list[int | str]) -> None:
+        items = [self.parse_item(i) for i in item_hex_codes]
+        self._write_items(player, items)
+        print(f"[+] Injected {len(items)} items into player {player}")
 
-    def fill_inventory_with_item(self, player: int, item_hex_code: int) -> None:
-        self._write_items(player, [item_hex_code] * SLOT_COUNT)
-        print(f"[+] Filled player {player}'s inventory with {item_hex_code:#06x}")
+    def fill_inventory_with_item(self, player: int, item_hex_code: int | str) -> None:
+        item = self.parse_item(item_hex_code)
+        self._write_items(player, [item] * SLOT_COUNT)
+        print(f"[+] Filled player {player}'s inventory with {item:#06x}")
 
     def wipe_player_inventory(self, player: int) -> None:
         self._write_items(player, [EMPTY_ITEM] * SLOT_COUNT)

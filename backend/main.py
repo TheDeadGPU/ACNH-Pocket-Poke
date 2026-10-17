@@ -21,8 +21,8 @@ class SwitchStatus(BaseModel):
 
 def _require_private(ip: IPvAnyAddress) -> None:
     """Optional: stop the API being used to probe arbitrary hosts."""
-    #if not ip.is_private:
-    #    raise HTTPException(400, "Only private/LAN addresses are allowed")
+    if not ip.is_private:
+        raise HTTPException(400, "Only private/LAN addresses are allowed")
 
 
 @app.get("/status", response_model=SwitchStatus)
