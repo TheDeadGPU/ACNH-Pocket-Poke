@@ -68,6 +68,20 @@ class ACNHInjector:
             raise ValueError(f"Item {item!r} must fit in 64 bits (up to 16 hex digits)")
         return value
 
+    def _read_items(self, player: int) -> list[int]:
+        """Read all 40 slots as raw 64-bit item values (one peek per block)."""
+        self._check_player(player)
+        self._require_acnh()
+
+        items: list[int] = []
+        for block in range(len(INVENTORY_BASES)):
+            addr = self.slot_address(player, block * BLOCK_SIZE)
+            raw = self.bot.Ram.peek(addr, BLOCK_SIZE * SLOT_STRIDE)
+            if isinstance(raw, str):          # some sysbot wrappers return a hex string
+                raw = bytes.fromhex(raw)
+            items.extend(struct.unpack(f"<{BLOCK_SIZE}Q", raw))
+        return items
+
     def _write_items(self, player: int, items: list[int]) -> None:
         """One poke per 20-slot block instead of one per slot."""
         self._check_player(player)
@@ -95,3 +109,18 @@ class ACNHInjector:
     def wipe_player_inventory(self, player: int) -> None:
         self._write_items(player, [EMPTY_ITEM] * SLOT_COUNT)
         print(f"[-] Wiped player {player}'s inventory")
+
+    def read_inventory(self, player: int, include_empty: bool = False) -> dict[int, str]:
+        """Return {slot: '0x...'} with the full 8-byte item value as a 16-digit hex string."""
+        items = self._read_items(player)
+        return {
+            slot: f"0x{value:016X}"
+            for slot, value in enumerate(items)
+            if include_empty or (value & 0xFFFF) != EMPTY_ITEM
+        }
+
+    def print_inventory(self, player: int) -> None:
+        inv = self.read_inventory(player)
+        print(f"Player {player}: {len(inv)}/{SLOT_COUNT} slots used")
+        for slot, hex_value in inv.items():
+            print(f"  slot {slot:2d}: {hex_value}  (item id 0x{int(hex_value, 16) & 0xFFFF:04X})")
