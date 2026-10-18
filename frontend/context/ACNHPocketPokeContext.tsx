@@ -22,7 +22,6 @@ export function ACNHPocketPokeProvider({ children }: { children: React.ReactNode
       const cleanIP = ip.trim();
       const result = isValidIPv4(cleanIP);
 
-      //Check to see if this is a private IP address.
       if(!result) throw new InvalidIPError(cleanIP);
       setSwitchIP(cleanIP);
     };
@@ -30,7 +29,7 @@ export function ACNHPocketPokeProvider({ children }: { children: React.ReactNode
   return (
     <ACNHPocketPokeContext.Provider
       value={{
-        switchIP: "",
+        switchIP,
         setSwitchIPAddress,
         items: [""],
       }}

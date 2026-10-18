@@ -7,6 +7,7 @@ import Image from "next/image";
 import type { ACNHItem } from "@/types/ACNHItem";
 import { Button } from "./ui/button";
 import { computeItemHex } from "@/lib/ItemHelper";
+import ItemExplorerCard from "./ItemExplorerCard";
 
 const data = rawData as unknown as Record<string, ACNHItem[]>;
 const categories = Object.keys(data);
@@ -33,17 +34,7 @@ export default function ItemExplorer() {
     <div>
       <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,--spacing(30)),0fr))] gap-4">
         {items.map((item) => (
-          <div key={item["Unique Entry ID"]} className="h-full w-ful bg-slate-600  rounded-xl p-2 hover:scale-105">
-            {item.Image && (
-              <Image src={item.Image} alt={item.Name} width={100} height={100} />
-            )}
-            <p className="text-[14px] font-bold uppercase line-clamp-2 leading-tight text-center">{item.Name}</p>
-            <div className="mt-3">
-              <p className="text-[12px] font-bold uppercase leading-tight">Housewares</p>
-              <p className="text-[12px] font-bold uppercase">ID: {item["Internal ID"]}</p>
-              <p className="text-[12px] font-bold uppercase">Hex: {computeItemHex(item)}</p>
-            </div>
-          </div>
+          <ItemExplorerCard key={item["Unique Entry ID"]} item={item} />
         ))}
       </div>
 

@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import Header from "@/components/Header";
 import { ACNHPocketPokeProvider } from "@/context/ACNHPocketPokeContext";
+import { Toaster } from "@/components/ui/toast";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,6 +38,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           >
             <Header />
             {children}
+            <Toaster />
           </ThemeProvider>
         </body>
       </ACNHPocketPokeProvider>
