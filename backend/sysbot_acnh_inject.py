@@ -54,8 +54,7 @@ item_hex_codes = [
 
 with ACNHInjector(SWITCH_IP, PORT, TIMEOUT) as injector:
     #injector.wipe_player_inventory(1)
-    #injector.inject_items(1, [0x00000005000034CC])
+    injector.inject_items(1, [0x00E0000600003369])
     #injector.inject_items(1,item_hex_codes)
     #injector.fill_inventory_with_item(1, 0x3604)
-    result = injector.read_inventory(1, True)
-    print(result)
+    #result = injector.read_inventory(1, True)

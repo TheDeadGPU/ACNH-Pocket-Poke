@@ -17,7 +17,9 @@ sheets = {}
 for ws in wb.worksheets[1:]:             # skip the first tab
     rows = list(ws.values)
     if rows:
-        sheets[ws.title] = pd.DataFrame(rows[1:], columns=rows[0]).map(extract_url)  # applymap on pandas < 2.1
+        df = pd.DataFrame(rows[1:], columns=rows[0]).map(extract_url)  # applymap on pandas < 2.1
+        df = df.astype(object).where(df.notna(), "NA")  # any NaN/None/NaT -> "NA"
+        sheets[ws.title] = df
 
 print(len(sheets))  # expect 40
 
