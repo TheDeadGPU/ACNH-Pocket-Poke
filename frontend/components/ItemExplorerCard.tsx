@@ -16,7 +16,7 @@ export default function ItemExplorerCard({ item }: { item: ACNHItem }) {
             await injectItems({ip:switchIP},[hex])
             toast.add({
                 type: "success",
-                description: `Added ${item.Name} to inventory slot one.`
+                description: `Added ${item.Name.toUpperCase()} to inventory slot one.`
             })
         }
         catch(e)
