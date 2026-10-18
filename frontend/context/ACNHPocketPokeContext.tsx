@@ -7,14 +7,15 @@ import React, { createContext, useContext, useState, useEffect, useMemo } from '
 interface ACNHPocketPokeContextType {
   switchIP: string;
   setSwitchIPAddress: (ip: string) => void;
-  items: string[];
+  itemSearchValue: string;
+  setItemSearchValue: (value: string) => void;
   
 }
 
 const ACNHPocketPokeContext = createContext<ACNHPocketPokeContextType | undefined>(undefined);
 
 export function ACNHPocketPokeProvider({ children }: { children: React.ReactNode }) {
-    const [snippets, setSnippets] = useState([])
+    const [itemSearchValue, setItemSearchValue] = useState("");
     const [switchIP, setSwitchIP] = useState("");
 
     const setSwitchIPAddress = (ip: string) => {
@@ -31,7 +32,8 @@ export function ACNHPocketPokeProvider({ children }: { children: React.ReactNode
       value={{
         switchIP,
         setSwitchIPAddress,
-        items: [""],
+        itemSearchValue,
+        setItemSearchValue
       }}
     >
       {children}

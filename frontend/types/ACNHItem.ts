@@ -1,6 +1,9 @@
 export interface ACNHItem {
   Name: string;
   Image: string;
+  "Closet Image": string;
+  "Storage Image": string;
+  "Inventory Image": string;
   Variation: string;
   "Body Title": string;
   Pattern: string;

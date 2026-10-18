@@ -6,6 +6,7 @@ import { InputGroup, InputGroupInput, InputGroupAddon, InputGroupButton } from "
 import NintendoSwitchStatus from "./NitendoSwitchStatus";
 import { Field, FieldDescription, FieldLabel } from "./ui/field";
 import NintendoSwitchIPInput from "./NintendoSwitchIPInput";
+import ItemExplorerSearchInput from "./ItemExplorerSearchInput";
 
 export default function Header()
 {
@@ -22,13 +23,7 @@ export default function Header()
                     </div>
                 </div>
                 <div className="flex gap-2">
-                    <InputGroup className="max-w-xs">
-                        <InputGroupInput placeholder="Search..." />
-                        <InputGroupAddon>
-                            <Search />
-                        </InputGroupAddon>
-                        <InputGroupAddon align="inline-end">12 results</InputGroupAddon>
-                    </InputGroup>
+                    <ItemExplorerSearchInput/>
                     <Button variant="outline"><IconShoppingCart/></Button>
                     <ThemeToggle/> 
                 </div>
