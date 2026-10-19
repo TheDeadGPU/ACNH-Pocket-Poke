@@ -12,6 +12,9 @@ export interface Item {
   variation: string | null; // e.g. "Silver"
   pattern: string | null;
 
+  // Custom Fields
+  stackAmount: number; // Number of items to inject into inventory slot. Default is 1.
+
   // Numbers: 0 when the source has no value. (0/1 flags are 0 = no, 1 = yes.)
   isDiy: number;
   isBuyable: number; // 1 if the item has a Buy price (0 = not for sale)
@@ -146,6 +149,7 @@ function buildIndex(p: Payload): ItemIndex {
       image,
       filename: s(I.filename),
       details,
+      stackAmount: 1, // default to 1 for injection
     };
   });
 

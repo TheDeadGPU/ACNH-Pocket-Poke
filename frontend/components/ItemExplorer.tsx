@@ -1,12 +1,14 @@
 // app/items/page.tsx
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import ItemExplorerCard from "./ItemExplorerCard";
 import { useACNHPocketPokeContext } from "@/context/ACNHPocketPokeContext";
 import { imageUrl, Item } from "@/lib/Item";
 import { computeItemHex } from "@/lib/ItemHelper";
+import ItemInjectButton from "./ItemInjectButton";
+import { Label } from "./ui/label";
 
 export default function ItemExplorer() {
   const PAGE_SIZE = 50;
@@ -136,6 +138,24 @@ function ItemDetails({ item }: { item: Item }) {
       entry[1] !== undefined && entry[1] !== "" && entry[1] !== 0,
   );
 
+  const [stack, setStack] = useState(1);
+
+  function incrementStack() {
+    setStack((prev) => Math.min(prev + 1, item.stackSize));
+  }
+
+  function decrementStack() {
+    setStack((prev) => Math.max(prev - 1, 1));
+  }
+
+  useEffect(() => {
+    setStack(1);
+  },[item])
+
+  useEffect(() => {
+    item.stackAmount = stack; // Update the stackAmount in the item object whenever stack changes
+  }, [stack, item]);
+
   return (
     <div>
       {image && (
@@ -147,8 +167,22 @@ function ItemDetails({ item }: { item: Item }) {
           className="mx-auto mb-3"
         />
       )}
-      <h3 className="mb-1 text-xl font-bold">{item.name}</h3>
-      <p className="mb-4 text-sm text-muted-foreground">{item.category}</p>
+      <h3 className="mb-1 text-xl font-bold">{item.name.toLocaleUpperCase()}</h3>
+      <p className="mb-4 text-sm text-muted-foreground">{item.category.toLocaleUpperCase()}</p>
+      <div className="flex items-center justify-between gap-2 mb-4">
+        <ItemInjectButton item={item}/>
+        {item.stackSize > 1 && (
+          <div className="flex items-center justify-between gap-2">
+            <Button disabled={stack <= 1} onClick={decrementStack}>
+              -
+            </Button>
+            <Label>{stack}</Label>
+            <Button disabled={stack >= item.stackSize} onClick={incrementStack}>
+              +
+            </Button>
+          </div>
+        )}
+      </div>
       <dl className="space-y-2 text-sm">
         {attributes.map(([label, value]) =>
           value !== null ? <ItemAttribute key={label} label={label} value={value} /> : null,

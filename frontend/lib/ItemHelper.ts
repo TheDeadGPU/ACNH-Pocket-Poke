@@ -1,9 +1,15 @@
 import { Item } from "./Item";
 
-function itemBytesLE(item: Item): Uint8Array {
+function itemBytesLE(item: Item, stackCount?: number): Uint8Array {
   const [bodyStr, patternStr] = (item.variantId ?? "0_0").split("_");
-  const body = Number(bodyStr) || 0;
   const pattern = Number(patternStr) || 0;
+
+  // Offset 4 is shared: stack count for stackables, body variant otherwise.
+  // Stackables store (amount - 1), so 1 item = 0, 10 items = 9.
+  const body =
+    stackCount !== undefined
+      ? Math.max(1, Math.floor(stackCount)) - 1
+      : Number(bodyStr) || 0;
 
   const view = new DataView(new ArrayBuffer(8));
   view.setUint16(0, item.internalId, true);
@@ -16,12 +22,14 @@ function itemBytesLE(item: Item): Uint8Array {
 const toHexLE = (b: Uint8Array) =>
   Array.from(b, (x) => x.toString(16).toUpperCase().padStart(2, "0")).join("");
 
-// Memory order (little-endian bytes), e.g. "D713000000000000"
-const hexLE = (item: Item) => toHexLE(itemBytesLE(item));
+// Memory order (little-endian bytes), e.g. "A508090000000000"
+const hexLE = (item: Item, stackCount?: number) =>
+  toHexLE(itemBytesLE(item, stackCount));
 
-// Same value read as a u64 number, e.g. "00000000000013D7" (only if you need it)
-const hexAsU64 = (item: Item) => toHexLE(itemBytesLE(item).reverse());
+// Same value read as a u64 number, e.g. "00000000000908A5"
+const hexAsU64 = (item: Item, stackCount?: number) =>
+  toHexLE(itemBytesLE(item, stackCount).reverse());
 
-export function computeItemHex(item: Item) {
-    return hexAsU64(item);
+export function computeItemHex(item: Item, stackCount?: number) {
+  return hexAsU64(item, stackCount);
 }
