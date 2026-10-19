@@ -75,6 +75,7 @@ function ItemExplorerCard({ item }: { item: Item }) {
         {item.name}
       </p>
       <div className="mt-3">
+        <p className="text-[12px] font-bold uppercase">{item.category.toUpperCase()}</p>
         <p className="text-[12px] font-bold uppercase">ID: {item.internalId}</p>
         <p className="font-mono text-[12px] font-bold normal-case">Hex: {hex}</p>
       </div>
