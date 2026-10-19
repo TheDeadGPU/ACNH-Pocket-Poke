@@ -78,6 +78,7 @@ function ItemExplorerCard({ item }: { item: Item }) {
         <p className="text-[12px] font-bold uppercase">{item.category.toUpperCase()}</p>
         <p className="text-[12px] font-bold uppercase">ID: {item.internalId}</p>
         <p className="font-mono text-[12px] font-bold normal-case">Hex: {hex}</p>
+        <p>{item.stackSize}</p>
       </div>
     </button>
   );

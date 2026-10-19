@@ -1,16 +1,13 @@
 // app/items/page.tsx
 "use client";
 
-import { useDeferredValue, useEffect, useMemo, useState } from "react";
-import { imageUrl, loadItems, searchItems, type Item, type ItemIndex } from "@/lib/Item";
-import rawData from "@/data/itemdata.json";
-import type { ACNHItem } from "@/types/ACNHItem";
+import { useState } from "react";
 import { Button } from "./ui/button";
 import ItemExplorerCard from "./ItemExplorerCard";
 import { useACNHPocketPokeContext } from "@/context/ACNHPocketPokeContext";
 
 export default function ItemExplorer() {
-    const PAGE_SIZE = 50;
+  const PAGE_SIZE = 50;
   const { items, itemSearchValue, itemCategory, setItemCategory, categories } = useACNHPocketPokeContext();
   const [page, setPage] = useState(1);
   const totalPages = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
@@ -25,6 +22,11 @@ export default function ItemExplorer() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const setCategory = (category: string) => {
+    setItemCategory(category);
+    setPage(1);
+  }
+
   return (
     <div>
       <div className="mb-4 flex flex-wrap gap-2">
@@ -32,7 +34,7 @@ export default function ItemExplorer() {
           <Button
             key={category}
             variant={itemCategory === category ? "default" : "outline"}
-            onClick={() => setItemCategory(category === 'All' ? "All" : category)}
+            onClick={() => setCategory(category === 'All' ? "All" : category)}
           >
             {category}
           </Button>
@@ -51,7 +53,7 @@ export default function ItemExplorer() {
       {itemsResult.length === 0 && (
         <p className="text-center text-slate-400">No items match that name.</p>
       )}
-     <nav className="mt-6 flex items-center justify-center gap-4">
+      <nav className="mt-6 flex items-center justify-center gap-4">
         <Button variant="outline" onClick={() => goTo(1)} disabled={currentPage === 1}>
           «
         </Button>
@@ -70,7 +72,7 @@ export default function ItemExplorer() {
           »
         </Button>
       </nav>
-      
+
     </div>
   );
 }
