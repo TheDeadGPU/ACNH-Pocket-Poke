@@ -31,7 +31,7 @@ export default function ItemExplorer() {
         {categories.map((category) => (
           <Button
             key={category}
-            variant={category === category ? "default" : "outline"}
+            variant={itemCategory === category ? "default" : "outline"}
             onClick={() => setItemCategory(category === 'All' ? "All" : category)}
           >
             {category}
