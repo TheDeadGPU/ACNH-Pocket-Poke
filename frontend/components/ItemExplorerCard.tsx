@@ -2,19 +2,20 @@ import { memo, useMemo, useState } from "react";
 import { useACNHPocketPokeContext } from "@/context/ACNHPocketPokeContext";
 import { computeItemHex } from "@/lib/ItemHelper";
 import { ApiError, injectItems } from "@/lib/pocketPoke";
-import { ACNHItem } from "@/types/ACNHItem";
 import { toast } from "@/components/ui/toast";
+import { imageUrl, Item } from "@/lib/Item";
 
 const FALLBACK_IMAGE = "/unknown_item.png";
 
-function ItemExplorerCard({ item }: { item: ACNHItem }) {
+function ItemExplorerCard({ item }: { item: Item }) {
   const { switchIP } = useACNHPocketPokeContext();
   const [pending, setPending] = useState(false);
 
   const hex = useMemo(() => computeItemHex(item), [item]);
-  const imageURL = item.Image || item["Closet Image"] || FALLBACK_IMAGE;
+  const imageURL = imageUrl(item);
 
   async function handleInject() {
+    console.log(item.image);
     if (pending) return;
 
     if (!switchIP.trim()) {
@@ -30,7 +31,7 @@ function ItemExplorerCard({ item }: { item: ACNHItem }) {
       await injectItems({ ip: switchIP.trim() }, [hex]);
       toast.add({
         type: "success",
-        description: `Added ${item.Name.toUpperCase()} to inventory slot one.`,
+        description: `Added ${item.name.toUpperCase()} to inventory slot one.`,
       });
     } catch (e) {
       let description =
@@ -60,8 +61,8 @@ function ItemExplorerCard({ item }: { item: ACNHItem }) {
                  disabled:cursor-wait disabled:opacity-60"
     >
       <img
-        src={imageURL}
-        alt={item.Name}
+        src={imageURL || FALLBACK_IMAGE}
+        alt={item.name}
         width={100}
         height={100}
         loading="lazy"
@@ -71,10 +72,10 @@ function ItemExplorerCard({ item }: { item: ACNHItem }) {
         className="mx-auto"
       />
       <p className="line-clamp-2 text-center text-[14px] font-bold uppercase leading-tight">
-        {item.Name}
+        {item.name}
       </p>
       <div className="mt-3">
-        <p className="text-[12px] font-bold uppercase">ID: {item["Internal ID"]}</p>
+        <p className="text-[12px] font-bold uppercase">ID: {item.internalId}</p>
         <p className="font-mono text-[12px] font-bold normal-case">Hex: {hex}</p>
       </div>
     </button>
