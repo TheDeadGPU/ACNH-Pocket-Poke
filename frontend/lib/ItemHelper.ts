@@ -33,3 +33,7 @@ const hexAsU64 = (item: Item, stackCount?: number) =>
 export function computeItemHex(item: Item, stackCount?: number) {
   return hexAsU64(item, stackCount);
 }
+
+export function convertItemArrayToHex(items: Item[]): string[] {
+  return items.map((item) => computeItemHex(item, item.stackAmount));
+}

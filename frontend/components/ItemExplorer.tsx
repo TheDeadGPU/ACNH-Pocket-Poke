@@ -9,6 +9,7 @@ import { imageUrl, Item } from "@/lib/Item";
 import { computeItemHex } from "@/lib/ItemHelper";
 import ItemInjectButton from "./ItemInjectButton";
 import { Label } from "./ui/label";
+import AddToShoppingCartButton from "./AddToShoppingCartButton";
 
 export default function ItemExplorer() {
   const PAGE_SIZE = 50;
@@ -170,7 +171,7 @@ function ItemDetails({ item }: { item: Item }) {
       <h3 className="mb-1 text-xl font-bold">{item.name.toLocaleUpperCase()}</h3>
       <p className="mb-4 text-sm text-muted-foreground">{item.category.toLocaleUpperCase()}</p>
       <div className="flex items-center justify-between gap-2 mb-4">
-        <ItemInjectButton item={item}/>
+        <AddToShoppingCartButton item={item} />
         {item.stackSize > 1 && (
           <div className="flex items-center justify-between gap-2">
             <Button disabled={stack <= 1} onClick={decrementStack}>

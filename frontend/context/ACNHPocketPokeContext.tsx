@@ -20,6 +20,9 @@ interface ACNHPocketPokeContextType {
   items: Item[]; // filtered results only, not the full index
   itemsLoading: boolean;
   itemsError: string | null;
+  shoppingCartItems: Item[];
+  addItemToCart: (item: Item) => void;
+  removeItemFromCart: (item: Item) => void;
 }
 
 const ACNHPocketPokeContext = createContext<ACNHPocketPokeContextType | undefined>(undefined);
@@ -30,6 +33,7 @@ export function ACNHPocketPokeProvider({ children }: { children: React.ReactNode
   const [itemSearchValue, setItemSearchValue] = useState('');
   const [itemCategory, setItemCategory] = useState('All'); // Default to "All" category
   const [switchIP, setSwitchIP] = useState('');
+  const [shoppingCartItems, setShoppingCartItems] = useState<Item[]>([]); // Optional: manage shopping cart items
 
   useEffect(() => {
     const cachedIP = localStorage.getItem('ACNHPP-SwitchIP');
@@ -83,12 +87,10 @@ export function ACNHPocketPokeProvider({ children }: { children: React.ReactNode
   const items = useMemo(
     () =>
       index
-        ? searchItems(index, deferredQuery, { category: effectiveCategory, limit: RESULT_LIMIT })
+        ? searchItems(index, deferredQuery, { category: effectiveCategory })
         : [],
     [index, deferredQuery, effectiveCategory],
   );
-
-  
 
   // Automatically prepend "All" to the loaded index categories safely
   const categories = useMemo(() => {
@@ -99,6 +101,18 @@ export function ACNHPocketPokeProvider({ children }: { children: React.ReactNode
   }, [index]);
 
   const itemsLoading = index === null && itemsError === null;
+
+  // Shopping cart management functions
+  const addItemToCart = useCallback((item: Item) => {
+    if(shoppingCartItems.length < 40)
+    {
+      setShoppingCartItems(prev => [...prev, { ...item }]);
+    }
+  }, []);
+
+  const removeItemFromCart = useCallback((item: Item) => {
+    setShoppingCartItems((prevItems) => prevItems.filter((i) => i !== item));
+  }, []);
 
   const value = useMemo(
     () => ({
@@ -112,8 +126,11 @@ export function ACNHPocketPokeProvider({ children }: { children: React.ReactNode
       items,
       itemsLoading,
       itemsError,
+      shoppingCartItems,
+      addItemToCart,
+      removeItemFromCart,
     }),
-    [switchIP, setSwitchIPAddress, itemSearchValue, itemCategory, handleSetItemCategory, categories, items, itemsLoading, itemsError],
+    [switchIP, setSwitchIPAddress, itemSearchValue, itemCategory, handleSetItemCategory, categories, items, itemsLoading, itemsError, shoppingCartItems, addItemToCart, removeItemFromCart],
   );
 
   return <ACNHPocketPokeContext.Provider value={value}>{children}</ACNHPocketPokeContext.Provider>;
