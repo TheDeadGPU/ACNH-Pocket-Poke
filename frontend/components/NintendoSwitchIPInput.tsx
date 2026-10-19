@@ -4,16 +4,16 @@ import { IconDeviceNintendo } from "@tabler/icons-react";
 import { Field } from "./ui/field";
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "./ui/input-group";
 import { useACNHPocketPokeContext } from "@/context/ACNHPocketPokeContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { InvalidIPError } from "@/lib/IPHelper";
 
 export default function NintendoSwitchIPInput()
 {
+    const {switchIP, setSwitchIPAddress} = useACNHPocketPokeContext();
     const [ip, setIP] = useState("");
     const [isIPSet, setIsIPset] = useState(false);
     const [isError, setIsError] = useState(false);
-    const {setSwitchIPAddress} = useACNHPocketPokeContext();
-
+    
     const borderColor = () => {
         if(!isIPSet) return ""
         else
@@ -43,6 +43,14 @@ export default function NintendoSwitchIPInput()
             }
         }
     }
+
+    useEffect(() => {
+        if(switchIP)
+        {
+            setIP(switchIP);
+            setIsIPset(true);
+        }
+    },[switchIP])
     return(
         <Field className="max-w-sm">
             <InputGroup className={borderColor()}>

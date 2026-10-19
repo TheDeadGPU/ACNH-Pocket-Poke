@@ -32,6 +32,24 @@ export function ACNHPocketPokeProvider({ children }: { children: React.ReactNode
   const [switchIP, setSwitchIP] = useState('');
 
   useEffect(() => {
+    const cachedIP = localStorage.getItem('ACNHPP-SwitchIP');
+    if (cachedIP && isValidIPv4(cachedIP)) {
+      setSwitchIP(cachedIP);
+    }
+  },[])
+
+  const saveSwitchIPToLocalStorage = (ip: string) => {
+    localStorage.setItem('ACNHPP-SwitchIP', ip);
+  }
+
+  const setSwitchIPAddress = useCallback((ip: string) => {
+    const cleanIP = ip.trim();
+    if (!isValidIPv4(cleanIP)) throw new InvalidIPError(cleanIP);
+    setSwitchIP(cleanIP);
+    saveSwitchIPToLocalStorage(cleanIP);
+  }, []);
+
+  useEffect(() => {
     let cancelled = false;
     loadItems()
       .then((idx) => !cancelled && setIndex(idx))
@@ -40,6 +58,8 @@ export function ACNHPocketPokeProvider({ children }: { children: React.ReactNode
       cancelled = true;
     };
   }, []);
+
+  
 
   // Custom setter that normalizes "All" and resets search input when selected
   const handleSetItemCategory = useCallback((category: string) => {
@@ -68,11 +88,7 @@ export function ACNHPocketPokeProvider({ children }: { children: React.ReactNode
     [index, deferredQuery, effectiveCategory],
   );
 
-  const setSwitchIPAddress = useCallback((ip: string) => {
-    const cleanIP = ip.trim();
-    if (!isValidIPv4(cleanIP)) throw new InvalidIPError(cleanIP);
-    setSwitchIP(cleanIP);
-  }, []);
+  
 
   // Automatically prepend "All" to the loaded index categories safely
   const categories = useMemo(() => {

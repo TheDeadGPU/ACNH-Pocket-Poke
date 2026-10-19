@@ -20,7 +20,6 @@ export function imageUrl(item: Pick<Item, "image">): string | null {
   if (!item.image) return null;
 
   const rawImage = String(item.image).trim();
-  console.log("Evaluating image:", rawImage); // Check your console/terminal
 
   if (rawImage.startsWith("http://") || rawImage.startsWith("https://")) {
     return rawImage;
