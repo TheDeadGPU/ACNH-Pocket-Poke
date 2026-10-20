@@ -1,9 +1,10 @@
 import { imageUrl, type Item } from "@/lib/Item";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import { useACNHPocketPokeContext } from "@/context/ACNHPocketPokeContext";
-import ShoppingCartItemCard from "./ShoppingCartItemCard";
+import ShoppingCartItemCard from "@/components/ShoppingCart/ShoppingCartItemCard";
 import { injectItems } from "@/lib/pocketPoke";
 import { convertItemArrayToHex } from "@/lib/ItemHelper";
+import ShoppingCartClearButton from "./ShoppingCartClearButton";
 
 export interface ShoppingCartProps {
   items?: Item[];
@@ -57,13 +58,11 @@ export default function ShoppingCart({
         </ul>
       )}
 
-      <div className="mt-4 flex justify-center">
+      <div className="mt-4 flex justify-center gap-4">
         <Button disabled={shoppingCartItems.length === 0} onClick={injectCart}>
           Inject Shopping Cart
         </Button>
-        <Button variant="destructive" onClick={() => clearShoppingCart()} className="ml-2">
-          Clear Cart
-        </Button>
+        <ShoppingCartClearButton/>
       </div>
     </aside>
   );

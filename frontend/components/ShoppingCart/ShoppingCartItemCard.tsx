@@ -1,5 +1,5 @@
 import { imageUrl, Item } from "@/lib/Item";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import { IconTrash } from "@tabler/icons-react";
 import { useACNHPocketPokeContext } from "@/context/ACNHPocketPokeContext";
 

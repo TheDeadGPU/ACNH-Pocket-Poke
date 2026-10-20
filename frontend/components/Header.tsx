@@ -6,10 +6,10 @@ import { ThemeToggle } from "./ThemeToggle";
 import { Button } from "./ui/button";
 import NintendoSwitchIPInput from "./NintendoSwitchIPInput";
 import ItemExplorerSearchInput from "./ItemExplorerSearchInput";
-import ShoppingCart from "./ShoppingCart";
+import ShoppingCartButton from "./ShoppingCart/ShoppingCartButton";
 
 export default function Header() {
-    const [isCartOpen, setIsCartOpen] = useState(false);
+    
 
     return (
         <div className="relative">
@@ -26,24 +26,12 @@ export default function Header() {
 
                 <div className="flex items-center gap-2">
                     <ItemExplorerSearchInput/>
-                    <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => setIsCartOpen((open) => !open)}
-                        aria-expanded={isCartOpen}
-                        aria-label="Toggle shopping cart"
-                    >
-                        <IconShoppingCart />
-                    </Button>
+                    <ShoppingCartButton/>
                     <ThemeToggle />
                 </div>
             </div>
 
-            {isCartOpen && (
-                <div className="absolute right-0 top-full z-20 mt-3 w-[min(24rem,calc(100vw-2rem))]">
-                    <ShoppingCart onClose={() => setIsCartOpen(false)} />
-                </div>
-            )}
+            
         </div>
     );
 }
