@@ -18,9 +18,8 @@ export default function ShoppingCart({
   open = true,
 }: ShoppingCartProps) {
   if (!open) return null;
-  const {switchIP, shoppingCartItems} = useACNHPocketPokeContext();
+  const {switchIP, shoppingCartItems, clearShoppingCart} = useACNHPocketPokeContext();
   const totalItems = shoppingCartItems.length;
-  //const totalItems = shoppingCartItems.reduce((sum, item) => sum + Math.max(item.stackAmount ?? 1, 1), 0);
 
   async function injectCart()
   {
@@ -61,6 +60,9 @@ export default function ShoppingCart({
       <div className="mt-4 flex justify-center">
         <Button disabled={shoppingCartItems.length === 0} onClick={injectCart}>
           Inject Shopping Cart
+        </Button>
+        <Button variant="destructive" onClick={() => clearShoppingCart()} className="ml-2">
+          Clear Cart
         </Button>
       </div>
     </aside>

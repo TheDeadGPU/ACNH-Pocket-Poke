@@ -2,6 +2,7 @@ import { memo, useMemo } from "react";
 import { computeItemHex } from "@/lib/ItemHelper";
 import { imageUrl, Item } from "@/lib/Item";
 import ItemInjectButton from "./ItemInjectButton";
+import AddToShoppingCartButton from "./AddToShoppingCartButton";
 
 const FALLBACK_IMAGE = "/unknown_item.png";
 
@@ -19,16 +20,16 @@ function ItemExplorerCard({
 
   return (
     <div
-      className={`h-full rounded-xl bg-slate-600 p-2 ${
-        selected ? "ring-2 ring-sky-400" : ""
+      className={`h-full rounded-xl border border-border bg-card p-2 text-card-foreground shadow-sm transition-colors ${
+        selected ? "ring-2 ring-primary ring-offset-2 ring-offset-background" : ""
       }`}
     >
       <button
         type="button"
         onClick={onSelect}
         aria-pressed={selected}
-        className="w-full text-left transition-transform hover:scale-105
-                   focus-visible:outline focus-visible:outline-2 focus-visible:outline-sky-400 hover:cursor-pointer"
+        className="w-full text-left text-card-foreground transition-transform hover:scale-105
+                   focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring hover:cursor-pointer"
       >
         <img
           src={imageURL || FALLBACK_IMAGE}
@@ -41,16 +42,18 @@ function ItemExplorerCard({
           }}
           className="mx-auto"
         />
-        <p className="line-clamp-2 text-center text-[14px] font-bold uppercase leading-tight">
+        <p className="line-clamp-2 text-center text-[14px] font-bold uppercase leading-tight text-foreground">
           {item.name}
         </p>
-        <div className="mt-3">
+        <div className="mt-3 space-y-1 text-muted-foreground">
           <p className="text-[12px] font-bold uppercase">{item.category.toUpperCase()}</p>
           <p className="text-[12px] font-bold uppercase">ID: {item.internalId}</p>
-          <p className="font-mono text-[12px] font-bold normal-case">Hex: {hex}</p>
+          <p className="font-mono text-[12px] font-bold normal-case text-foreground">
+            Hex: {hex}
+          </p>
         </div>
       </button>
-      <ItemInjectButton item={item} className="mt-2 w-full" />
+      <AddToShoppingCartButton item={item} className="mt-2 w-full" />
     </div>
   );
 }

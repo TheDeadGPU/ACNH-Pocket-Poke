@@ -23,6 +23,7 @@ interface ACNHPocketPokeContextType {
   shoppingCartItems: Item[];
   addItemToCart: (item: Item) => void;
   removeItemFromCart: (item: Item) => void;
+  clearShoppingCart: () => void;
 }
 
 const ACNHPocketPokeContext = createContext<ACNHPocketPokeContextType | undefined>(undefined);
@@ -114,6 +115,10 @@ export function ACNHPocketPokeProvider({ children }: { children: React.ReactNode
     setShoppingCartItems((prevItems) => prevItems.filter((i) => i !== item));
   }, []);
 
+  const clearShoppingCart = useCallback(() => {
+    setShoppingCartItems([]);
+  }, []);
+
   const value = useMemo(
     () => ({
       switchIP,
@@ -129,8 +134,9 @@ export function ACNHPocketPokeProvider({ children }: { children: React.ReactNode
       shoppingCartItems,
       addItemToCart,
       removeItemFromCart,
+      clearShoppingCart,
     }),
-    [switchIP, setSwitchIPAddress, itemSearchValue, itemCategory, handleSetItemCategory, categories, items, itemsLoading, itemsError, shoppingCartItems, addItemToCart, removeItemFromCart],
+    [switchIP, setSwitchIPAddress, itemSearchValue, itemCategory, handleSetItemCategory, categories, items, itemsLoading, itemsError, shoppingCartItems, addItemToCart, removeItemFromCart, clearShoppingCart],
   );
 
   return <ACNHPocketPokeContext.Provider value={value}>{children}</ACNHPocketPokeContext.Provider>;
