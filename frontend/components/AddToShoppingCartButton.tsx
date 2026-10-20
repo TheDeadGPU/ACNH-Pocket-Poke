@@ -19,7 +19,14 @@ export default function AddToShoppingCartButton({
 
     setPending(true);
     try {
-      addItemToCart(item);
+      if (!addItemToCart(item)) {
+        toast.add({
+          type: "error",
+          description: "Shopping cart is full.",
+        });
+        return;
+      }
+
       toast.add({
         type: "success",
         description: `Added ${item.name.toUpperCase()} to shopping cart.`,

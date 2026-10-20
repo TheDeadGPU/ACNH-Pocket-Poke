@@ -2,7 +2,7 @@
 
 import { InvalidIPError, isValidIPv4 } from '@/lib/IPHelper';
 import React, {
-  createContext, useCallback, useContext, useDeferredValue, useEffect, useMemo, useState,
+  createContext, useCallback, useContext, useDeferredValue, useEffect, useMemo, useRef, useState,
 } from 'react';
 import { loadItems, searchItems, type Item, type ItemIndex } from '@/lib/Item';
 
@@ -21,7 +21,7 @@ interface ACNHPocketPokeContextType {
   itemsLoading: boolean;
   itemsError: string | null;
   shoppingCartItems: Item[];
-  addItemToCart: (item: Item) => void;
+  addItemToCart: (item: Item) => boolean;
   removeItemFromCart: (item: Item) => void;
   clearShoppingCart: () => void;
 }
@@ -35,6 +35,7 @@ export function ACNHPocketPokeProvider({ children }: { children: React.ReactNode
   const [itemCategory, setItemCategory] = useState('All'); // Default to "All" category
   const [switchIP, setSwitchIP] = useState('');
   const [shoppingCartItems, setShoppingCartItems] = useState<Item[]>([]); // Optional: manage shopping cart items
+  const shoppingCartItemsRef = useRef(shoppingCartItems);
 
   useEffect(() => {
     const cachedIP = localStorage.getItem('ACNHPP-SwitchIP');
@@ -103,19 +104,24 @@ export function ACNHPocketPokeProvider({ children }: { children: React.ReactNode
 
   const itemsLoading = index === null && itemsError === null;
 
-  // Shopping cart management functions
-  const addItemToCart = useCallback((item: Item) => {
-    if(shoppingCartItems.length < 40)
-    {
-      setShoppingCartItems(prev => [...prev, { ...item }]);
-    }
+  const addItemToCart = useCallback((item: Item): boolean => {
+    const currentItems = shoppingCartItemsRef.current;
+    if (currentItems.length >= 40) return false;
+
+    const updatedItems = [...currentItems, { ...item }];
+    shoppingCartItemsRef.current = updatedItems;
+    setShoppingCartItems(updatedItems);
+    return true;
   }, []);
 
   const removeItemFromCart = useCallback((item: Item) => {
-    setShoppingCartItems((prevItems) => prevItems.filter((i) => i !== item));
+    const updatedItems = shoppingCartItemsRef.current.filter((i) => i !== item);
+    shoppingCartItemsRef.current = updatedItems;
+    setShoppingCartItems(updatedItems);
   }, []);
 
   const clearShoppingCart = useCallback(() => {
+    shoppingCartItemsRef.current = [];
     setShoppingCartItems([]);
   }, []);
 
