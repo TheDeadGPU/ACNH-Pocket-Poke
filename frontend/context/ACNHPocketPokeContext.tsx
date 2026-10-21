@@ -24,6 +24,12 @@ interface ACNHPocketPokeContextType {
   addItemToCart: (item: Item) => boolean;
   removeItemFromCart: (item: Item) => void;
   clearShoppingCart: () => void;
+  selectedInventorySlot: number;
+  setSelectedInventorySlot(slot: number): void;
+  selectedPlayer: number;
+  setSelectedPlayer(player:number): void;
+  selectedItem: Item | undefined;
+  setSelectedItem(item: Item): void;
 }
 
 const ACNHPocketPokeContext = createContext<ACNHPocketPokeContextType | undefined>(undefined);
@@ -36,6 +42,9 @@ export function ACNHPocketPokeProvider({ children }: { children: React.ReactNode
   const [switchIP, setSwitchIP] = useState('');
   const [shoppingCartItems, setShoppingCartItems] = useState<Item[]>([]); // Optional: manage shopping cart items
   const shoppingCartItemsRef = useRef(shoppingCartItems);
+  const [selectedInventorySlot, setSelectedInventorySlot] = useState(0)
+  const [selectedPlayer, setSelectedPlayer] = useState(1);
+  const [selectedItem, setSelectedItem] = useState<Item | undefined>();
 
   useEffect(() => {
     const cachedIP = localStorage.getItem('ACNHPP-SwitchIP');
@@ -104,6 +113,8 @@ export function ACNHPocketPokeProvider({ children }: { children: React.ReactNode
 
   const itemsLoading = index === null && itemsError === null;
 
+  // Shopping Cart Logic
+
   const addItemToCart = useCallback((item: Item): boolean => {
     const currentItems = shoppingCartItemsRef.current;
     if (currentItems.length >= 40) return false;
@@ -125,6 +136,8 @@ export function ACNHPocketPokeProvider({ children }: { children: React.ReactNode
     setShoppingCartItems([]);
   }, []);
 
+  // Inventory Logic
+
   const value = useMemo(
     () => ({
       switchIP,
@@ -141,8 +154,14 @@ export function ACNHPocketPokeProvider({ children }: { children: React.ReactNode
       addItemToCart,
       removeItemFromCart,
       clearShoppingCart,
+      selectedInventorySlot,
+      setSelectedInventorySlot,
+      selectedPlayer,
+      setSelectedPlayer,
+      selectedItem,
+      setSelectedItem,
     }),
-    [switchIP, setSwitchIPAddress, itemSearchValue, itemCategory, handleSetItemCategory, categories, items, itemsLoading, itemsError, shoppingCartItems, addItemToCart, removeItemFromCart, clearShoppingCart],
+    [switchIP, setSwitchIPAddress, itemSearchValue, itemCategory, handleSetItemCategory, categories, items, itemsLoading, itemsError, shoppingCartItems, addItemToCart, removeItemFromCart, clearShoppingCart, selectedInventorySlot, setSelectedInventorySlot, selectedPlayer, setSelectedPlayer, selectedItem, setSelectedItem],
   );
 
   return <ACNHPocketPokeContext.Provider value={value}>{children}</ACNHPocketPokeContext.Provider>;

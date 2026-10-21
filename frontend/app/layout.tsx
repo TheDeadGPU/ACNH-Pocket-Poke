@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import Header from "@/components/Header";
 import { ACNHPocketPokeProvider } from "@/context/ACNHPocketPokeContext";
 import { Toaster } from "@/components/ui/toast";
+import AppHeaderV2 from "@/components/v2-components/AppHeaderV2";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,14 +30,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <ACNHPocketPokeProvider>
-        <body className="min-h-full flex flex-col p-2">
+        <body className="min-h-full flex flex-col bg-[var(--background)">
           <ThemeProvider
             attribute="class"
-            defaultTheme="dark"
+            defaultTheme="light"
             enableSystem
             disableTransitionOnChange
           >
-            <Header />
+            <AppHeaderV2/>
             {children}
             <Toaster />
           </ThemeProvider>

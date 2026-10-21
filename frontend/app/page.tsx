@@ -8,7 +8,7 @@ import ItemExplorer from "@/components/ItemExplorer";
 export default function HomePage() {
 
   return (
-    <main>
+    <main className="p-2">
       <ItemExplorer/>
     </main>
   );
