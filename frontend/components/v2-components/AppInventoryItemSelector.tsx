@@ -1,124 +1,155 @@
 "use client";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useVirtualizer } from "@tanstack/react-virtual";
+import { Search } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useACNHPocketPokeContext } from "@/context/ACNHPocketPokeContext";
 import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList } from "../ui/combobox";
-import { Field, FieldDescription, FieldLabel } from "../ui/field";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { Field, FieldLabel } from "../ui/field";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "../ui/input-group";
-import { Search } from "lucide-react";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import AppInventoryItemCard from "./AppInventoryItemCard";
-import { Button } from "../ui/button";
-import { Label } from "../ui/label";
-import { useEffect, useState } from "react";
+import StackStepper from "@/components/v2-components/StackStepper";
+import { computeItemHex } from "@/lib/ItemHelper";
 import { Item } from "@/lib/Item";
-interface AppInventoryItemSelectorProps {
-    className?: string;
+import { Button } from "../ui/button";
+
+const ROW_HEIGHT = 66;
+
+function useDebounced<T>(value: T, ms = 200): T {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const t = setTimeout(() => setDebounced(value), ms);
+    return () => clearTimeout(t);
+  }, [value, ms]);
+  return debounced;
 }
 
-export default function AppInventoryItemSelector(props: AppInventoryItemSelectorProps) {
+export default function AppInventoryItemSelector({ className }: { className?: string }) {
+  const {
+    items, setItemSearchValue, itemCategory, setItemCategory, categories,
+    selectedInventorySlot, selectedPlayer, selectedItem, setSelectedItem,
+    addItemToInventory
+  } = useACNHPocketPokeContext();
 
-    const { items, itemSearchValue, setItemSearchValue, itemCategory, setItemCategory, categories, selectedInventorySlot, selectedPlayer, selectedItem, setSelectedItem } = useACNHPocketPokeContext();
-    const [stack, setStack] = useState(1);
+  const [stack, setStack] = useState(1);
+  const [query, setQuery] = useState("");
+  const debouncedQuery = useDebounced(query);
 
-    function incrementStack() {
-        if(selectedItem)
-        {
-            setStack((prev) => Math.min(prev + 1, selectedItem.stackSize));
-        }
+  useEffect(() => {
+    setItemSearchValue(debouncedQuery);
+  }, [debouncedQuery, setItemSearchValue]);
+
+  // Reset the stack in the handler instead of an effect: no extra render pass.
+  const handleSelect = useCallback((item: Item) => {
+    setSelectedItem(item);
+    setStack(1);
+  }, [setSelectedItem]);
+
+  // Derived, never stored, and no mutation of the shared item object.
+  const hex = selectedItem ? computeItemHex(selectedItem, stack) : "";
+
+  const listRef = useRef<HTMLDivElement>(null);
+  const virtualizer = useVirtualizer({
+    count: items.length,
+    getScrollElement: () => listRef.current,
+    estimateSize: () => ROW_HEIGHT,
+    overscan: 8,
+  });
+
+  const handleAddToInventory = useCallback(() => {
+    if(selectedItem)
+    {
+        addItemToInventory(selectedItem,selectedInventorySlot);
     }
+  },[]);
 
-    function decrementStack() {
-        setStack((prev) => Math.max(prev - 1, 1));
-    }
+  return (
+    <div className={className}>
+      <div className="h-screen rounded-xl bg-white p-2">
+        <Tabs defaultValue="items" className="w-full">
+          <TabsList>
+            <TabsTrigger value="items">Items</TabsTrigger>
+            <TabsTrigger value="loadouts" disabled>Loadouts</TabsTrigger>
+          </TabsList>
 
-    useEffect(() => {
-        setStack(1);
-    }, [selectedItem])
+          <TabsContent value="items">
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <p className="text-lg font-bold text-lime-700">Slot {selectedInventorySlot + 1}</p>
+                <p className="text-xs">Player {selectedPlayer} · Pockets</p>
+              </div>
 
-    useEffect(() => {
-        if (selectedItem) {
-            selectedItem.stackAmount = stack; // Update the stackAmount in the item object whenever stack changes
-        }
-    }, [stack, selectedItem]);
+              <InputGroup className="max-w-xs">
+                <InputGroupInput
+                  placeholder="Search items"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                />
+                <InputGroupAddon><Search /></InputGroupAddon>
+                <InputGroupAddon align="inline-end">{items.length}</InputGroupAddon>
+              </InputGroup>
 
-    return (
-        <div className={props.className}>
-            <div className="bg-white rounded-xl h-screen p-2">
-                <Tabs defaultValue="account" className="w-full">
-                    <TabsList>
-                        <TabsTrigger value="items">Items</TabsTrigger>
-                        <TabsTrigger value="loadouts" disabled>Loadouts</TabsTrigger>
-                    </TabsList>
-                    <TabsContent value="items">
-                        <div className="space-y-2">
-                            <div id="items-header" className="flex justify-between">
-                                <p className="text-lg text-lime-700 font-bold">Slot {selectedInventorySlot + 1}</p>
-                                <p className="text-xs">Player {selectedPlayer} · Pockets</p>
-                            </div>
-                            <div>
-                                <InputGroup className="max-w-xs">
-                                    <InputGroupInput placeholder="Search items" onChange={(e) => setItemSearchValue(e.target.value)} />
-                                    <InputGroupAddon>
-                                        <Search />
-                                    </InputGroupAddon>
-                                    <InputGroupAddon align="inline-end">{items.length}</InputGroupAddon>
-                                </InputGroup>
-                            </div>
-                            <div id="item-cetagories">
-                                <Field className="w-full max-w-xs">
-                                    <FieldLabel>Item Category</FieldLabel>
-                                    <Combobox items={categories} defaultValue="All">
-                                        <ComboboxInput placeholder="Select a category" />
-                                        <ComboboxContent>
-                                            <ComboboxEmpty>No items found.</ComboboxEmpty>
-                                            <ComboboxList>
-                                                {(item) => (
-                                                    <ComboboxItem key={item} value={item} onClick={() => setItemCategory(item)}>
-                                                        {item}
-                                                    </ComboboxItem>
-                                                )}
-                                            </ComboboxList>
-                                        </ComboboxContent>
-                                    </Combobox>
-                                </Field>
-                            </div>
-                            <div id="item-list">
-                                <ScrollArea className="h-[200px] w-full rounded-md border p-4">
-                                    {items.map((item, idx) => (
-                                        <AppInventoryItemCard key={`item-${idx}-${item.variantId}`} item={item} />
-                                    ))}
-                                </ScrollArea>
-                            </div>
-                            <div id="item-quantity">
-                                <div className="flex justify-between rounded-lg border-2 border-[var(--border)] p-2 items-center">
-                                    <p className="font-bold">Quantity</p>
-                                    <div className="flex gap-4">
-                                        <Button disabled={stack <= 1} onClick={decrementStack}>
-                                            -
-                                        </Button>
-                                        <Label>{stack}</Label>
-                                        <Button disabled={!selectedItem || stack >= selectedItem.stackSize} onClick={incrementStack}>
-                                            +
-                                        </Button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div id="hex-value-display">
-                                <div className="flex justify-between rounded-lg border-2 border-[var(--border)] p-2 items-center">
-                                    <div>
-                                        <p className="font-bold text-xs">Advanced raw 8-byte value</p>
-                                        <p>{selectedItem?.hex}</p>
-                                        <p className="font-bold text-xs">Count, variation and flags live in the upper bytes.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </TabsContent>
-                    <TabsContent value="loadouts">Change your loadout here.</TabsContent>
-                </Tabs>
+              <Field className="w-full max-w-xs">
+                <FieldLabel>Item Category</FieldLabel>
+                <Combobox
+                  items={categories}
+                  value={itemCategory}
+                  onValueChange={(v) => v && setItemCategory(v)}
+                >
+                  <ComboboxInput placeholder="Select a category" />
+                  <ComboboxContent>
+                    <ComboboxEmpty>No categories found.</ComboboxEmpty>
+                    <ComboboxList>
+                      {(category) => (
+                        <ComboboxItem key={category} value={category}>{category}</ComboboxItem>
+                      )}
+                    </ComboboxList>
+                  </ComboboxContent>
+                </Combobox>
+              </Field>
+
+              {/* Only the visible rows (~4 + overscan) are ever mounted. */}
+              <div ref={listRef} className="h-[200px] w-full overflow-auto rounded-md border">
+                <div style={{ height: virtualizer.getTotalSize(), position: "relative" }}>
+                  {virtualizer.getVirtualItems().map((row) => {
+                    const item = items[row.index];
+                    return (
+                      <div
+                        key={item.id}
+                        className="absolute left-0 top-0 w-full px-2 py-1"
+                        style={{ height: row.size, transform: `translateY(${row.start}px)` }}
+                      >
+                        <AppInventoryItemCard
+                          item={item}
+                          selected={item.id === selectedItem?.id}
+                          onSelect={handleSelect}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between rounded-lg border-2 border-[var(--border)] p-2">
+                <p className="font-bold">Quantity</p>
+                <StackStepper value={stack} max={selectedItem?.stackSize ?? 1} onChange={setStack} />
+              </div>
+
+              <div className="rounded-lg border-2 border-[var(--border)] p-2">
+                <p className="text-xs font-bold">Advanced raw 8-byte value</p>
+                <p className="font-mono">{hex}</p>
+                <p className="text-xs font-bold">Count, variation and flags live in the upper bytes.</p>
+              </div>
+
+              <div className="flex w-full">
+                <Button variant="default" className="w-full font-bold" onClick={() => handleAddToInventory()}>Set slot {selectedInventorySlot + 1} to {selectedItem?.name} x{stack}</Button>
+              </div>
             </div>
-        </div>
-    )
+          </TabsContent>
+          <TabsContent value="loadouts">Change your loadout here.</TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  );
 }

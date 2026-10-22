@@ -30,6 +30,11 @@ interface ACNHPocketPokeContextType {
   setSelectedPlayer(player:number): void;
   selectedItem: Item | undefined;
   setSelectedItem(item: Item): void;
+  //Exprimental
+  inventoryItems: (Item | null)[];
+  addItemToInventory(item: Item, slot: number): boolean;
+  clearInventory(): void;
+
 }
 
 const ACNHPocketPokeContext = createContext<ACNHPocketPokeContextType | undefined>(undefined);
@@ -45,6 +50,7 @@ export function ACNHPocketPokeProvider({ children }: { children: React.ReactNode
   const [selectedInventorySlot, setSelectedInventorySlot] = useState(0)
   const [selectedPlayer, setSelectedPlayer] = useState(1);
   const [selectedItem, setSelectedItem] = useState<Item | undefined>();
+  const [inventoryItems, setInventoryItems] = useState<(Item | null)[]>([]);
 
   useEffect(() => {
     const cachedIP = localStorage.getItem('ACNHPP-SwitchIP');
@@ -137,6 +143,20 @@ export function ACNHPocketPokeProvider({ children }: { children: React.ReactNode
   }, []);
 
   // Inventory Logic
+  const INVENTORY_SLOT_COUNT = 40; // module level, matches SLOT_COUNT on the API
+
+  // inside the provider
+
+  const addItemToInventory = useCallback((item: Item, slot: number): boolean => {
+    if (!Number.isInteger(slot) || slot < 0 || slot >= INVENTORY_SLOT_COUNT) return false;
+    setInventoryItems((prev) => prev.map((cur, i) => (i === slot ? { ...item } : cur)));
+    return true;
+  }, []);
+
+  const clearInventory = useCallback(
+    () => setInventoryItems(Array<Item | null>(INVENTORY_SLOT_COUNT).fill(null)),
+    [],
+  );
 
   const value = useMemo(
     () => ({
@@ -160,8 +180,11 @@ export function ACNHPocketPokeProvider({ children }: { children: React.ReactNode
       setSelectedPlayer,
       selectedItem,
       setSelectedItem,
+      inventoryItems,
+      addItemToInventory,
+      clearInventory,
     }),
-    [switchIP, setSwitchIPAddress, itemSearchValue, itemCategory, handleSetItemCategory, categories, items, itemsLoading, itemsError, shoppingCartItems, addItemToCart, removeItemFromCart, clearShoppingCart, selectedInventorySlot, setSelectedInventorySlot, selectedPlayer, setSelectedPlayer, selectedItem, setSelectedItem],
+    [switchIP, setSwitchIPAddress, itemSearchValue, itemCategory, handleSetItemCategory, categories, items, itemsLoading, itemsError, shoppingCartItems, addItemToCart, removeItemFromCart, clearShoppingCart, selectedInventorySlot, setSelectedInventorySlot, selectedPlayer, setSelectedPlayer, selectedItem, setSelectedItem,inventoryItems, addItemToInventory, clearInventory],
   );
 
   return <ACNHPocketPokeContext.Provider value={value}>{children}</ACNHPocketPokeContext.Provider>;
