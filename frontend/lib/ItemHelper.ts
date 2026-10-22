@@ -7,7 +7,7 @@ function itemBytesLE(item: Item, stackCount?: number): Uint8Array {
   // Offset 4 is shared: stack count for stackables, body variant otherwise.
   // Stackables store (amount - 1), so 1 item = 0, 10 items = 9.
   const body =
-    stackCount !== undefined
+    stackCount !== undefined && item.stackSize > 1
       ? Math.max(1, Math.floor(stackCount)) - 1
       : Number(bodyStr) || 0;
 

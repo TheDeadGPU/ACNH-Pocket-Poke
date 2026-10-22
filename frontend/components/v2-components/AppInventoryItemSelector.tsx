@@ -29,10 +29,10 @@ export default function AppInventoryItemSelector({ className }: { className?: st
   const {
     items, setItemSearchValue, itemCategory, setItemCategory, categories,
     selectedInventorySlot, selectedPlayer, selectedItem, setSelectedItem,
-    addItemToInventory
+    selectedStackAmount: stack, setSelectedStackAmount: setStack,
+    addItemToInventory, itemsLoading, itemsError,
   } = useACNHPocketPokeContext();
 
-  const [stack, setStack] = useState(1);
   const [query, setQuery] = useState("");
   const debouncedQuery = useDebounced(query);
 
@@ -44,7 +44,7 @@ export default function AppInventoryItemSelector({ className }: { className?: st
   const handleSelect = useCallback((item: Item) => {
     setSelectedItem(item);
     setStack(1);
-  }, [setSelectedItem]);
+  }, [setSelectedItem, setStack]);
 
   // Derived, never stored, and no mutation of the shared item object.
   const hex = selectedItem ? computeItemHex(selectedItem, stack) : "";
@@ -58,15 +58,12 @@ export default function AppInventoryItemSelector({ className }: { className?: st
   });
 
   const handleAddToInventory = useCallback(() => {
-    if(selectedItem)
-    {
-        addItemToInventory(selectedItem,selectedInventorySlot);
-    }
-  },[]);
+    if (selectedItem) addItemToInventory(selectedItem, selectedInventorySlot, stack);
+  }, [addItemToInventory, selectedInventorySlot, selectedItem, stack]);
 
   return (
     <div className={className}>
-      <div className="h-screen rounded-xl bg-white p-2">
+      <div className="min-h-[32rem] rounded-xl bg-white p-3">
         <Tabs defaultValue="items" className="w-full">
           <TabsList>
             <TabsTrigger value="items">Items</TabsTrigger>
@@ -130,10 +127,15 @@ export default function AppInventoryItemSelector({ className }: { className?: st
                   })}
                 </div>
               </div>
+              {itemsLoading && <p className="text-sm text-muted-foreground">Loading item catalog...</p>}
+              {itemsError && <p role="alert" className="text-sm text-destructive">{itemsError}</p>}
+              {!itemsLoading && !itemsError && items.length === 0 && (
+                <p className="text-sm text-muted-foreground">No items match your search.</p>
+              )}
 
               <div className="flex items-center justify-between rounded-lg border-2 border-[var(--border)] p-2">
                 <p className="font-bold">Quantity</p>
-                <StackStepper value={stack} max={selectedItem?.stackSize ?? 1} onChange={setStack} />
+                <StackStepper value={stack} max={Math.max(1, selectedItem?.stackSize ?? 1)} onChange={setStack} />
               </div>
 
               <div className="rounded-lg border-2 border-[var(--border)] p-2">
@@ -143,7 +145,16 @@ export default function AppInventoryItemSelector({ className }: { className?: st
               </div>
 
               <div className="flex w-full">
-                <Button variant="default" className="w-full font-bold" onClick={() => handleAddToInventory()}>Set slot {selectedInventorySlot + 1} to {selectedItem?.name} x{stack}</Button>
+                <Button
+                  variant="default"
+                  className="w-full font-bold"
+                  disabled={!selectedItem}
+                  onClick={handleAddToInventory}
+                >
+                  {selectedItem
+                    ? `Set slot ${selectedInventorySlot + 1} to ${selectedItem.name} x${stack}`
+                    : "Select an item first"}
+                </Button>
               </div>
             </div>
           </TabsContent>

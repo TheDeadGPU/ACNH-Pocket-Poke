@@ -1,4 +1,4 @@
-import { imageUrl, type Item } from "@/lib/Item";
+import { type Item } from "@/lib/Item";
 import { Button } from "@/components/ui/button";
 import { useACNHPocketPokeContext } from "@/context/ACNHPocketPokeContext";
 import ShoppingCartItemCard from "@/components/ShoppingCart/ShoppingCartItemCard";
@@ -18,8 +18,8 @@ export default function ShoppingCart({
   onClose,
   open = true,
 }: ShoppingCartProps) {
+  const {switchIP, shoppingCartItems} = useACNHPocketPokeContext();
   if (!open) return null;
-  const {switchIP, shoppingCartItems, clearShoppingCart} = useACNHPocketPokeContext();
   const totalItems = shoppingCartItems.length;
 
   async function injectCart()

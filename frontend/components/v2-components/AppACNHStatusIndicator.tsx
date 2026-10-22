@@ -1,71 +1,95 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useACNHPocketPokeContext } from "@/context/ACNHPocketPokeContext";
 import { getStatus } from "@/lib/pocketPoke";
+import { isValidIPv4 } from "@/lib/IPHelper";
 
 export default function AppACNHStatusIndicator() {
-    const { switchIP } = useACNHPocketPokeContext();
-    const [isReachable, setIsReachable] = useState<boolean | null>(null);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
-
-    const checkStatus = useCallback(async (): Promise<boolean> => {
-        try {
-            const s = await getStatus({ ip: switchIP }, AbortSignal.timeout(15_000));
-            return Boolean(s?.reachable);
-        } catch (err) {
-            return false;
-        }
-    }, [switchIP]);
+    const { switchIP, switchPort } = useACNHPocketPokeContext();
+    const [result, setResult] = useState<{
+        target: string;
+        reachable: boolean;
+        acnhRunning: boolean;
+        error: string | null;
+    } | null>(null);
+    const target = `${switchIP}:${switchPort}`;
+    const port = Number(switchPort);
+    const validPort = Number.isInteger(port) && port >= 1 && port <= 65535;
+    const validIP = isValidIPv4(switchIP);
 
     useEffect(() => {
+        if (!validIP || !validPort) return;
         let isMounted = true;
-
-        const verify = async (showLoading = false) => {
-            if (showLoading) setIsLoading(true);
-            const result = await checkStatus();
-            if (isMounted) {
-                setIsReachable(result);
-                setIsLoading(false);
+        const verify = async () => {
+            try {
+                const status = await getStatus(
+                    { ip: switchIP, port },
+                    AbortSignal.timeout(15_000),
+                );
+                if (isMounted) {
+                    setResult({
+                        target,
+                        reachable: status.reachable,
+                        acnhRunning: status.acnh_running,
+                        error: status.error,
+                    });
+                }
+            } catch (error) {
+                if (isMounted) {
+                    setResult({
+                        target,
+                        reachable: false,
+                        acnhRunning: false,
+                        error: error instanceof Error ? error.message : "Unable to check Switch status",
+                    });
+                }
             }
         };
 
-        // Run immediately on mount / IP change (show loading state on initial load)
-        verify(true);
-
-        // Set up polling every 30 seconds (30,000 ms)
+        void verify();
         const intervalId = setInterval(() => {
-            verify(false); // Background poll without flashing the "Checking..." state
+            void verify();
         }, 30_000);
 
-        // Cleanup interval on unmount or dependency change
         return () => {
             isMounted = false;
             clearInterval(intervalId);
         };
-    }, [checkStatus]);
+    }, [port, switchIP, target, validIP, validPort]);
+
+    const isLoading = validIP && validPort && result?.target !== target;
+    const isReachable = result?.target === target ? result.reachable : null;
+    const isACNHRunnable = result?.target === target ? result.acnhRunning : null;
+    const error = result?.target === target ? result.error : null;
+    const label = !switchIP
+        ? "Add Switch IP"
+        : !validIP
+            ? "Invalid Switch IP"
+            : !validPort
+                ? "Invalid port"
+                : isLoading
+                    ? "Checking Switch..."
+                    : isACNHRunnable
+                ? "ACNH ready"
+                : isReachable
+                    ? "Switch connected · ACNH not running"
+                    : "Switch unreachable";
 
     return (
-        <div className="flex items-center gap-2 text-sm font-medium">
-            {/* Status Indicator Dot */}
-            <span 
-                className={`inline-block w-3 h-3 rounded-full transition-colors ${
-                    isLoading 
-                        ? "bg-yellow-400 animate-pulse" 
-                        : isReachable 
-                            ? "bg-green-500 shadow-sm shadow-green-500/50" 
-                            : "bg-red-500 shadow-sm shadow-red-500/50"
-                }`} 
+        <div className="flex items-center gap-2 text-sm font-medium" title={error ?? undefined} aria-live="polite">
+            <span
+                className={`inline-block size-3 rounded-full transition-colors ${
+                    isLoading
+                        ? "animate-pulse bg-yellow-400"
+                        : isACNHRunnable
+                            ? "bg-green-500 shadow-sm shadow-green-500/50"
+                            : isReachable
+                                ? "bg-yellow-500"
+                                : "bg-red-500 shadow-sm shadow-red-500/50"
+                }`}
             />
-            
-            {/* Status Text */}
-            <span className="font-bold text-gray-700 dark:text-gray-300">
-                {isLoading 
-                    ? "Checking Switch status..." 
-                    : isReachable 
-                        ? "ACNH ready" 
-                        : "ACNH Unreachable"}
-            </span>
+            <span className="font-bold text-gray-700 dark:text-gray-300">{label}</span>
         </div>
     );
 }

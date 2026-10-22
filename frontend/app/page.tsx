@@ -1,15 +1,9 @@
-"use client";
-
-import { useState } from "react";
-import { ApiError, getStatus, injectItems } from "@/lib/pocketPoke";
-import ACNHItemExplorer from "@/components/ItemExplorer";
-import ItemExplorer from "@/components/ItemExplorer";
+import AppInventoryEditor from "@/components/v2-components/AppInventoryEditor";
 
 export default function HomePage() {
-
   return (
-    <main className="p-2">
-      <ItemExplorer/>
+    <main className="mx-auto w-full max-w-[1600px] p-2 sm:p-4">
+      <AppInventoryEditor />
     </main>
   );
 }

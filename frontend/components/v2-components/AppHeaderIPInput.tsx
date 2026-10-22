@@ -1,10 +1,9 @@
 "use client";
 
 import { useACNHPocketPokeContext } from "@/context/ACNHPocketPokeContext";
-import { Button } from "../ui/button";
-import { Field, FieldDescription, FieldLabel } from "../ui/field";
+import { isValidIPv4 } from "@/lib/IPHelper";
+import { Field, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
-import CustomFieldInput from "./ShadUI Custom Components/CustomFieldInput";
 
 interface AppHeaderIPInputProps
 {
@@ -13,13 +12,35 @@ interface AppHeaderIPInputProps
 
 export default function AppHeaderIPInput({className} : AppHeaderIPInputProps)
 {
-    const {setSwitchIPAddress} = useACNHPocketPokeContext();
+    const {switchIP, setSwitchIPAddress, switchPort, setSwitchPort} = useACNHPocketPokeContext();
+    const port = Number(switchPort);
+    const validPort = Number.isInteger(port) && port >= 1 && port <= 65535;
     return(
-        <div className={className}>
-            <div className="flex gap-4">
-                <CustomFieldInput label="Switch IP address" placeholder="192.168.1.1..." onChange={(value) => setSwitchIPAddress(value)}/>
-                <CustomFieldInput label="Port" placeholder="6000"/>
+        <div className={`flex gap-3 ${className ?? ""}`}>
+            <Field className="w-44">
+                <FieldLabel htmlFor="switch-ip">Switch IP address</FieldLabel>
+                <Input
+                    id="switch-ip"
+                    inputMode="decimal"
+                    autoComplete="off"
+                    placeholder="192.168.1.1"
+                    value={switchIP}
+                    aria-invalid={switchIP.length > 0 && !isValidIPv4(switchIP)}
+                    onChange={(event) => setSwitchIPAddress(event.target.value)}
+                />
+            </Field>
+            <Field className="w-24">
+                <FieldLabel htmlFor="switch-port">Port</FieldLabel>
+                <Input
+                    id="switch-port"
+                    type="number"
+                    min={1}
+                    max={65535}
+                    value={switchPort}
+                    aria-invalid={!validPort}
+                    onChange={(event) => setSwitchPort(event.target.value)}
+                />
+            </Field>
             </div>
-        </div>
     )
 }

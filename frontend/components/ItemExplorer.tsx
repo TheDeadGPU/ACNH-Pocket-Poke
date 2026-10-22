@@ -1,7 +1,7 @@
 // app/items/page.tsx
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { Button } from "./ui/button";
 import ItemExplorerCard from "./ItemExplorerCard";
 import { useACNHPocketPokeContext } from "@/context/ACNHPocketPokeContext";
@@ -102,7 +102,7 @@ export default function ItemExplorer() {
             )}
           </div>
           {selectedItem ? (
-            <ItemDetails item={selectedItem} />
+            <ItemDetails key={selectedItem.id} item={selectedItem} />
           ) : (
             <p className="text-sm text-muted-foreground">
               Select an item to see its details.
@@ -149,14 +149,6 @@ function ItemDetails({ item }: { item: Item }) {
     setStack((prev) => Math.max(prev - 1, 1));
   }
 
-  useEffect(() => {
-    setStack(1);
-  },[item])
-
-  useEffect(() => {
-    item.stackAmount = stack; // Update the stackAmount in the item object whenever stack changes
-  }, [stack, item]);
-
   return (
     <div>
       {image && (
@@ -171,7 +163,7 @@ function ItemDetails({ item }: { item: Item }) {
       <h3 className="mb-1 text-xl font-bold">{item.name.toLocaleUpperCase()}</h3>
       <p className="mb-4 text-sm text-muted-foreground">{item.category.toLocaleUpperCase()}</p>
       <div className="flex items-center justify-between gap-2 mb-4">
-        <AddToShoppingCartButton item={item} />
+        <AddToShoppingCartButton item={{ ...item, stackAmount: stack }} />
         {item.stackSize > 1 && (
           <div className="flex items-center justify-between gap-2">
             <Button disabled={stack <= 1} onClick={decrementStack}>
