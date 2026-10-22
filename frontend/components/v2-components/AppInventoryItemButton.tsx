@@ -20,9 +20,15 @@ function AppInventoryItemButton({ item, slot, selected, onSelect }: Props) {
       onClick={() => onSelect(slot)}
       className={`rounded-xl p-1 ${selected ? "border-2 border-black" : ""}`}
     >
-      <div className="flex h-[100px] w-full items-center justify-center rounded-lg border border-dashed border-indigo-500 p-2">
+      <div className="relative flex h-[100px] w-full items-center justify-center rounded-lg border border-dashed border-indigo-500 p-2">
         {item ? (
-          <img src={imageUrl(item) || "/unknown_item.png"} alt="" width={64} height={64} loading="lazy" />
+          <div>
+            <img src={imageUrl(item) || "/unknown_item.png"} alt="" width={64} height={64} loading="lazy" />
+            <p>{item.name}</p>
+            <span className="absolute right-2 top-2 rounded-full bg-black/75 px-2 py-1 text-xs font-semibold leading-none text-white shadow-sm">
+              x{item.stackAmount}
+            </span>
+          </div>
         ) : (
           <IconPlus />
         )}
