@@ -77,7 +77,7 @@ export default function AppInventoryItemSelector({ className }: { className?: st
                 <p className="text-xs">Player {selectedPlayer} · Pockets</p>
               </div>
 
-              <InputGroup className="max-w-xs">
+              <InputGroup className="w-full">
                 <InputGroupInput
                   placeholder="Search items"
                   value={query}
@@ -87,7 +87,7 @@ export default function AppInventoryItemSelector({ className }: { className?: st
                 <InputGroupAddon align="inline-end">{items.length}</InputGroupAddon>
               </InputGroup>
 
-              <Field className="w-full max-w-xs">
+              <Field className="w-full">
                 <FieldLabel>Item Category</FieldLabel>
                 <Combobox
                   items={categories}
@@ -142,6 +142,7 @@ export default function AppInventoryItemSelector({ className }: { className?: st
                 <p className="text-xs font-bold">Advanced raw 8-byte value</p>
                 <p className="font-mono">{hex}</p>
                 <p className="text-xs font-bold">Count, variation and flags live in the upper bytes.</p>
+                <p>{selectedItem?.internalId}</p>
               </div>
 
               <div className="flex w-full">
