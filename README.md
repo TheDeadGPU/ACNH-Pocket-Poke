@@ -39,3 +39,10 @@ $ npm run dev (or `yarn dev` or `pnpm run dev`)
 # production build
 $ npm run build (or `yarn build` or `pnpm run build`)
 ```
+
+### SysbotBase HTTP API
+
+The Electron main process starts a local HTTP API on `127.0.0.1:3001`.
+Use `GET http://127.0.0.1:3001/api/sysbotbase/status` to read the current
+placeholder status. It returns JSON indicating that SysBot status integration
+has not been configured yet.

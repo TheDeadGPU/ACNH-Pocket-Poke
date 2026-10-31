@@ -2,6 +2,7 @@ import path from 'path'
 import { app, ipcMain } from 'electron'
 import serve from 'electron-serve'
 import { createWindow } from './helpers/create-window'
+import { registerPocketPokeIpc } from './ipc'
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -13,7 +14,10 @@ if (isProd) {
 
 ;(async () => {
   await app.whenReady()
-
+  registerPocketPokeIpc((e) => {
+    const url = e.senderFrame?.url ?? "";
+    return url.startsWith("file://") || url.startsWith("http://localhost:"); // dev server origin
+  });
   const mainWindow = createWindow('main', {
     width: 1000,
     height: 600,
@@ -38,3 +42,6 @@ app.on('window-all-closed', () => {
 ipcMain.on('message', async (event, arg) => {
   event.reply('message', `${arg} World!`)
 })
+
+// Define IPC Calls here
+ipcMain.handle('app:get-version', () => app.getVersion())

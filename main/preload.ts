@@ -1,4 +1,5 @@
-import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron'
+import { contextBridge, ipcRenderer, type IpcRendererEvent } from 'electron'
+import type { PocketPokeBridge } from "../shared/ipc"; // type-only, no runtime import
 
 const handler = {
   send<T>(channel: string, value?: T) {
@@ -13,8 +14,18 @@ const handler = {
       ipcRenderer.removeListener(channel, subscription)
     }
   },
+  getAppVersion(): Promise<string> {
+    return ipcRenderer.invoke('app:get-version')
+  },
 }
 
-contextBridge.exposeInMainWorld('ipc', handler)
+// Keep these strings in sync with CHANNELS in shared/ipc.ts
+const bridge: PocketPokeBridge = {
+  getStatus: (opts) => ipcRenderer.invoke('pocketPoke:status', opts),
+  injectItems: (req) => ipcRenderer.invoke('pocketPoke:inject', req),
+};
+
+contextBridge.exposeInMainWorld('ipc', handler);
+contextBridge.exposeInMainWorld('pocketPoke', bridge);
 
 export type IpcHandler = typeof handler
