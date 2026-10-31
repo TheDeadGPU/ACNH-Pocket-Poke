@@ -16,7 +16,7 @@ if (isProd) {
   await app.whenReady()
   registerPocketPokeIpc((e) => {
     const url = e.senderFrame?.url ?? "";
-    return url.startsWith("file://") || url.startsWith("http://localhost:"); // dev server origin
+    return url.startsWith("app://") || url.startsWith("http://localhost:"); // dev server origin
   });
   const mainWindow = createWindow('main', {
     width: 1000,
