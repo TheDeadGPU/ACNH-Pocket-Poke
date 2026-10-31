@@ -14,6 +14,7 @@ export interface Item {
 
   // Custom Fields
   stackAmount: number; // Number of items to inject into inventory slot. Default is 1.
+  itemType: "Normal" | "Permadrop" | "Nonfunctional";
 
   // Numbers: 0 when the source has no value. (0/1 flags are 0 = no, 1 = yes.)
   isDiy: number;
@@ -67,6 +68,11 @@ interface Payload {
   items: (Cell | Sparse)[][];
 }
 
+interface UnsafeItem {
+  itemId: number | string;
+  warningType: Exclude<Item["itemType"], "Normal">;
+}
+
 export interface ItemIndex {
   categories: string[];
   items: Item[];
@@ -85,7 +91,20 @@ export function normalize(s: string): string {
 
 export const toHex = (id: number) => `0x${id.toString(16).toUpperCase().padStart(4, "0")}`;
 
-function buildIndex(p: Payload): ItemIndex {
+function normalizeItemId(id: number | string): string {
+  if (typeof id === "number") return String(id);
+
+  const value = id.trim();
+  if (/^0x[0-9a-f]+$/i.test(value)) return String(parseInt(value.slice(2), 16));
+  if (/^\d+$/.test(value)) return String(Number(value));
+  return value.toLowerCase();
+}
+
+function buildIndex(p: Payload, unsafeItems: UnsafeItem[]): ItemIndex {
+  const itemTypes = new Map<string, Item["itemType"]>();
+  for (const { itemId, warningType } of unsafeItems) {
+    itemTypes.set(normalizeItemId(itemId), warningType);
+  }
   const pos = new Map(p.fields.map((name, i) => [name, i]));
   const at = (name: string) => {
     const i = pos.get(name);
@@ -150,6 +169,7 @@ function buildIndex(p: Payload): ItemIndex {
       filename: s(I.filename),
       details,
       stackAmount: 1, // default to 1 for injection
+      itemType: itemTypes.get(normalizeItemId(internalId)) ?? "Normal",
     };
   });
 
@@ -165,12 +185,17 @@ let pending: Promise<ItemIndex> | null = null;
 
 export function loadItems(): Promise<ItemIndex> {
   if (!pending) {
-    pending = fetch("/data/items.json")
-      .then((res) => {
-        if (!res.ok) throw new Error(`Failed to load items (HTTP ${res.status})`);
-        return res.json() as Promise<Payload>;
-      })
-      .then(buildIndex)
+    const loadJson = <T,>(path: string) =>
+      fetch(path).then((res) => {
+        if (!res.ok) throw new Error(`Failed to load ${path} (HTTP ${res.status})`);
+        return res.json() as Promise<T>;
+      });
+
+    pending = Promise.all([
+      loadJson<Payload>("/data/items.json"),
+      loadJson<UnsafeItem[]>("/data/unsafeitems.json"),
+    ])
+      .then(([items, unsafeItems]) => buildIndex(items, unsafeItems))
       .catch((err) => {
         pending = null; // allow a retry
         throw err;

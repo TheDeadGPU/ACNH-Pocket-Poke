@@ -1,15 +1,9 @@
-"use client";
+import AppInventoryEditor from "@/components/v2-components/AppInventoryEditor";
 
-import { useState } from "react";
-import { ApiError, getStatus, injectItems } from "@/lib/pocketPoke";
-import ACNHItemExplorer from "@/components/ItemExplorer";
-import ItemExplorer from "@/components/ItemExplorer";
-
-export default function HomePage() {
-
-  return (
-    <main>
-      <ItemExplorer/>
-    </main>
-  );
+export default function AppV2HomePage() {
+    return (
+        <main className="p-2">
+            <AppInventoryEditor/>
+        </main>
+    )
 }
