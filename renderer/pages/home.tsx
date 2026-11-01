@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { getSwitchStatus, injectItems } from '../pocketPoke'
 import AppHeader from '@/components/AppHeader'
+import AppInventoryEditor from '#components/AppInventoryEditor'
 
 export default function HomePage() {
   const [appVersion, setAppVersion] = React.useState<string | null>(null)
@@ -64,6 +65,7 @@ export default function HomePage() {
       </Head>
       <main>
         <AppHeader/>
+        <AppInventoryEditor/>
       </main>
     </React.Fragment>
   )

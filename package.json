@@ -14,6 +14,7 @@
   "dependencies": {
     "@base-ui/react": "^1.9.0",
     "@tabler/icons-react": "^3.50.0",
+    "@tanstack/react-virtual": "^3.14.25",
     "class-variance-authority": "^0.7.1",
     "cn": "^0.5.1",
     "electron-serve": "^3.0.0",

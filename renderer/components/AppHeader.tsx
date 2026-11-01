@@ -14,10 +14,10 @@ export default function AppHeader()
                     <span className="flex items-center gap-3 text-3xl font-black tracking-tighter">Pocket Poke</span>
                 </div>
             </div>
-            <div className="flex gap-4">
-                <AppHeaderIPInput/>
-                <AppACNHStatusIndicator/>
-            </div>
+            <AppACNHStatusIndicator/>
+        </div>
+        <div className="flex justify-between">
+            <AppHeaderIPInput/>
             <AppPlayerSelectButtons/>
         </div>
     </div>
