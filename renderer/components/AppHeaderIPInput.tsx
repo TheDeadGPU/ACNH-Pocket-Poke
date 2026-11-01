@@ -38,7 +38,7 @@ export default function AppHeaderIPInput({className} : AppHeaderIPInputProps)
                     max={65535}
                     value={switchPort}
                     aria-invalid={!validPort}
-                    onChange={(event) => setSwitchPort(event.target.value)}
+                    onChange={(event) => setSwitchPort(Number.parseInt(event.target.value))}
                 />
             </Field>
             </div>

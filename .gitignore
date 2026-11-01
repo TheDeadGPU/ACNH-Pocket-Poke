@@ -9,3 +9,5 @@ next-env.d.ts
 /app
 /dist
 /.yarn
+resources/.DS_Store
+.DS_Store

@@ -12,7 +12,7 @@ interface ACNHPocketPokeContextType {
   switchIP: string;
   setSwitchIPAddress: (ip: string) => void;
   switchPort: number;
-  setSwitchPort: (port: string) => void;
+  setSwitchPort: (port: number) => void;
   itemSearchValue: string;
   setItemSearchValue: (value: string) => void;
   itemCategory: string; // "" or "All" = all categories
@@ -77,7 +77,7 @@ export function ACNHPocketPokeProvider({ children }: { children: React.ReactNode
     if (isValidIPv4(cleanIP)) localStorage.setItem('ACNHPP-SwitchIP', cleanIP);
   }, []);
 
-  const setSwitchPortValue = useCallback((port: string) => {
+  const setSwitchPortValue = useCallback((port: number) => {
     setSwitchPort(port);
     const numericPort = Number(port);
     if (Number.isInteger(numericPort) && numericPort >= 1 && numericPort <= 65535) {

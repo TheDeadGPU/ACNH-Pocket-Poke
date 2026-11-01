@@ -23,8 +23,8 @@ const toHexLE = (b: Uint8Array) =>
   Array.from(b, (x) => x.toString(16).toUpperCase().padStart(2, "0")).join("");
 
 // Memory order (little-endian bytes), e.g. "A508090000000000"
-const hexLE = (item: Item, stackCount?: number) =>
-  toHexLE(itemBytesLE(item, stackCount));
+//const hexLE = (item: Item, stackCount?: number) =>
+//  toHexLE(itemBytesLE(item, stackCount));
 
 // Same value read as a u64 number, e.g. "00000000000908A5"
 const hexAsU64 = (item: Item, stackCount?: number) =>
