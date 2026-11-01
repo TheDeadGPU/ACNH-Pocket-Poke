@@ -10,7 +10,12 @@
     "noUnusedLocals": true,
     "esModuleInterop": true,
     "isolatedModules": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "moduleResolution": "bundler",
+    "resolvePackageJsonImports": true,
+    "paths": {
+      "@/*": ["./renderer/*"]
+    }
   },
   "exclude": ["node_modules", "app", "dist"]
 }

@@ -40,6 +40,17 @@ $ npm run dev (or `yarn dev` or `pnpm run dev`)
 $ npm run build (or `yarn build` or `pnpm run build`)
 ```
 
+### Shadcn UI
+
+Shadcn UI is configured with Base UI primitives and Tailwind CSS v4. Add components
+from the repository root with:
+
+```
+yarn dlx shadcn@latest add button
+```
+
+Generated components are placed in `renderer/components/ui`.
+
 ### SysbotBase HTTP API
 
 The Electron main process starts a local HTTP API on `127.0.0.1:3001`.

@@ -1,9 +1,14 @@
 import type { AppProps } from 'next/app'
+import { ACNHPocketPokeProvider } from '@/context/ACNHPocketPokeContext'
 
 import '../styles/globals.css'
 
 function MyApp({ Component, pageProps }: AppProps) {
-  return <Component {...pageProps} />
+  return (
+    <ACNHPocketPokeProvider>
+      <Component {...pageProps} />
+    </ACNHPocketPokeProvider>
+  )
 }
 
 export default MyApp
