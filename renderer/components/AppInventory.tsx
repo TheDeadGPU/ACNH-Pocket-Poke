@@ -17,7 +17,7 @@ export default function AppInventory({ className }: { className?: string }) {
   const {
     inventoryItems, selectedInventorySlot, setSelectedInventorySlot,
     clearInventory, fillInventoryWithItem, selectedItem, selectedStackAmount,
-    selectedPlayer, switchIP, switchPort,
+    selectedPlayer, switchIP, switchPort
   } = useACNHPocketPokeContext();
   const [isInjecting, setIsInjecting] = useState(false);
   const usedCount = inventoryItems.slice(0, SLOT_COUNT).filter(Boolean).length;
@@ -47,7 +47,7 @@ export default function AppInventory({ className }: { className?: string }) {
         const item = inventoryItems[slot];
         return item ? `0x${computeItemHex(item, item.stackAmount)}` : EMPTY_ITEM_HEX;
       });
-      await injectItems({ip: switchIP}, items);
+      await injectItems({ip: switchIP, player: selectedPlayer}, items);
       //await injectItems({ ip: switchIP, port, player: selectedPlayer }, items);
       toast.add({ type: "success", description: `Updated all 40 slots for player ${selectedPlayer}.` });
     } catch (error) {
