@@ -42,5 +42,9 @@
     "#components/*": "./renderer/components/*.tsx",
     "#lib/*": "./renderer/lib/*.ts",
     "#hooks/*": "./renderer/hooks/*.ts"
+  },
+  "build": {
+  "appId": "com.example.app",
+  "productName": "My App"
   }
 }
