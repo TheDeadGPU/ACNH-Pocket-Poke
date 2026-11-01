@@ -31,8 +31,8 @@ function unwrap<T>(res: IpcResult<T>): T {
   return res.data;
 }
 
-export async function getStatus(opts: ConnOpts): Promise<SwitchStatus> {
-  return unwrap(await window.pocketPoke.getStatus(opts));
+export async function getSwitchStatus(opts: ConnOpts): Promise<SwitchStatus> {
+  return unwrap(await window.pocketPoke.getSwitchStatus(opts));
 }
 
 export async function injectItems(

@@ -1,6 +1,7 @@
 import { IconLeaf } from "@tabler/icons-react";
 import AppHeaderIPInput from "./AppHeaderIPInput";
 import AppPlayerSelectButtons from "./AppPlayerSelectButtons";
+import AppACNHStatusIndicator from "./AppACNHStatusIndicator";
 
 export default function AppHeader()
 {
@@ -15,6 +16,7 @@ export default function AppHeader()
             </div>
             <div className="flex gap-4">
                 <AppHeaderIPInput/>
+                <AppACNHStatusIndicator/>
             </div>
             <AppPlayerSelectButtons/>
         </div>

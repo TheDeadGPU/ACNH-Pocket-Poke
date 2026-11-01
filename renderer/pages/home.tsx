@@ -2,7 +2,7 @@ import React from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import Image from 'next/image'
-import { getStatus, injectItems } from '../pocketPoke'
+import { getSwitchStatus, injectItems } from '../pocketPoke'
 import AppHeader from '@/components/AppHeader'
 
 export default function HomePage() {
@@ -13,12 +13,12 @@ export default function HomePage() {
   const [isCheckingSwitchStatus, setIsCheckingSwitchStatus] = React.useState(false)
   const conn = {ip: "192.168.12.115"}; // port defaults to 6000, timeout to 3s
 
-  async function getSwitchStatus() {
+  async function getStatus() {
     setIsCheckingSwitchStatus(true)
     setSwitchStatus(null)
     setSwitchStatusError(null)
     try {
-      const status = await getStatus(conn)
+      const status = await getSwitchStatus(conn)
       if (!status.reachable) {
         setSwitchStatusError(status.error ?? 'Unable to reach the Switch')
       } else if (!status.acnh_running) {

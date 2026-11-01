@@ -47,6 +47,6 @@ export type IpcResult<T> = { ok: true; data: T } | { ok: false; error: IpcError 
 
 // Shape of window.pocketPoke, as exposed by the preload script.
 export interface PocketPokeBridge {
-  getStatus(opts: ConnOpts): Promise<IpcResult<SwitchStatus>>;
+  getSwitchStatus(opts: ConnOpts): Promise<IpcResult<SwitchStatus>>;
   injectItems(req: InjectRequest): Promise<IpcResult<InjectResult>>;
 }

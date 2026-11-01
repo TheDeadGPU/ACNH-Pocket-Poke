@@ -21,7 +21,7 @@ const handler = {
 
 // Keep these strings in sync with CHANNELS in shared/ipc.ts
 const bridge: PocketPokeBridge = {
-  getStatus: (opts) => ipcRenderer.invoke('pocketPoke:status', opts),
+  getSwitchStatus: (opts) => ipcRenderer.invoke('pocketPoke:status', opts),
   injectItems: (req) => ipcRenderer.invoke('pocketPoke:inject', req),
 };
 

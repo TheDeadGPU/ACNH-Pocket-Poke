@@ -11,7 +11,7 @@ const DEFAULT_CATEGORIES = ['All']; // Default state before loading or fallback
 interface ACNHPocketPokeContextType {
   switchIP: string;
   setSwitchIPAddress: (ip: string) => void;
-  switchPort: string;
+  switchPort: number;
   setSwitchPort: (port: string) => void;
   itemSearchValue: string;
   setItemSearchValue: (value: string) => void;
@@ -49,7 +49,7 @@ export function ACNHPocketPokeProvider({ children }: { children: React.ReactNode
   const [itemSearchValue, setItemSearchValue] = useState('');
   const [itemCategory, setItemCategory] = useState('All'); // Default to "All" category
   const [switchIP, setSwitchIP] = useState('');
-  const [switchPort, setSwitchPort] = useState('6000');
+  const [switchPort, setSwitchPort] = useState(6000);
   const [shoppingCartItems, setShoppingCartItems] = useState<Item[]>([]); // Optional: manage shopping cart items
   const shoppingCartItemsRef = useRef(shoppingCartItems);
   const [selectedInventorySlot, setSelectedInventorySlot] = useState(0)
@@ -67,7 +67,7 @@ export function ACNHPocketPokeProvider({ children }: { children: React.ReactNode
     }
     const cachedPort = localStorage.getItem('ACNHPP-SwitchPort');
     if (cachedPort && Number.isInteger(Number(cachedPort)) && Number(cachedPort) >= 1 && Number(cachedPort) <= 65535) {
-      setSwitchPort(cachedPort);
+      setSwitchPort(Number.parseInt(cachedPort));
     }
   },[])
 
