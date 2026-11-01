@@ -19,9 +19,8 @@ if (isProd) {
     return url.startsWith("app://") || url.startsWith("http://localhost:"); // dev server origin
   });
   const mainWindow = createWindow('main', {
-    width: 1000,
+    width: 1080,
     height: 600,
-    fullscreen: true,
     webPreferences: {
       preload: path.join(import.meta.dirname, 'preload.js'),
     },
