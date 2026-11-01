@@ -44,7 +44,7 @@
     "#hooks/*": "./renderer/hooks/*.ts"
   },
   "build": {
-  "appId": "com.example.app",
-  "productName": "My App"
+  "appId": "com.thedeadgpu.acnhpocketpoke",
+  "productName": "ACNH Pocket Poke"
   }
 }
