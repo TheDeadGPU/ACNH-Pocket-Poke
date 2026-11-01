@@ -16,7 +16,7 @@ Use this application at your own risk. The developer is not responsible for any 
 
 ## Requirements
 
-- Node.js and Yarn 4.18.1.
+- Node.js and Corepack (the project uses Yarn 4.18.1).
 - A computer and Nintendo Switch on the same local network.
 - sys-botbase running on the Switch, with ACNH open.
 
@@ -27,11 +27,11 @@ The injector uses version-specific ACNH memory addresses. Confirm they match you
 ```sh
 git clone https://github.com/TheDeadGPU/ACNH-Pocket-Poke.git
 cd ACNH-Pocket-Poke
-yarn install
-yarn dev
+corepack yarn install
+corepack yarn dev
 ```
 
-`yarn dev` starts the Electron application in development mode and opens the developer tools.
+`corepack yarn dev` starts the Electron application in development mode and opens the developer tools.
 
 ## Using the app
 
@@ -46,8 +46,8 @@ Applying replaces all 40 pocket slots for the selected player. Empty slots in th
 
 | Command | Description |
 | --- | --- |
-| `yarn dev` | Run the app in development mode |
-| `yarn build` | Build the Electron application |
+| `corepack yarn dev` | Run the app in development mode |
+| `corepack yarn build` | Build the Electron application |
 
 ## Project structure
 
