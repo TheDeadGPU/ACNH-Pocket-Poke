@@ -21,6 +21,7 @@ if (isProd) {
   const mainWindow = createWindow('main', {
     width: 1000,
     height: 600,
+    fullscreen: true,
     webPreferences: {
       preload: path.join(import.meta.dirname, 'preload.js'),
     },

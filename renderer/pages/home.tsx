@@ -61,7 +61,7 @@ export default function HomePage() {
   return (
     <React.Fragment>
       <Head>
-        <title>ACNH Pocket Poke</title>
+        <title>ACNH Pocket Poke v2.0.0 (ACNH 3.0.3) Compatible</title>
       </Head>
       <main>
         <AppHeader/>
