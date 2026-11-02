@@ -1,0 +1,23 @@
+appId: com.thedeadgpu.acnhpocketpoke
+productName: ACNH Pocket Poke
+copyright: Copyright © 2026 TheDeadGPU
+directories:
+  output: dist
+  buildResources: resources
+files:
+  - from: .
+    filter:
+      - package.json
+      - app
+publish: null
+mac:
+  target:
+    - target: dmg
+      arch: universal
+  extendInfo:
+    NSLocalNetworkUsageDescription: Pocket Poke connects to your Nintendo Switch on your local network.
+    NSBonjourServices: ["_http._tcp"]
+win:
+  target:
+    - target: nsis
+      arch: x64

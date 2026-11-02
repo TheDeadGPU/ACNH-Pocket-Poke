@@ -1,42 +1,56 @@
 # ACNH Pocket Poke
 
-ACNH Pocket Poke lets you build a 40-slot Animal Crossing: New Horizons pocket
-inventory and send it to a Switch running sys-botbase.
+ACNH Pocket Poke is a desktop inventory editor for *Animal Crossing: New Horizons*. Build a 40-slot pocket inventory from the bundled item catalog, choose a player, and apply the inventory to a Switch running sys-botbase on your local network.
+
+## Disclaimer
+
+Use this application at your own risk. The developer is not responsible for any data loss, corrupted save data, or other damage resulting from using this application. Back up your save data before use.
+
+## Features
+
+- Search and filter a catalog of over 25,000 items.
+- Edit all 40 pocket slots, choose stack quantities, fill the inventory with one item, or clear it.
+- Select one of the eight player inventories.
+- Check whether the Switch is reachable and whether ACNH is running.
+- Mark catalog items that are nonfunctional or cannot be picked up.
 
 ## Requirements
 
-- Python 3.10 or later
-- Node.js 20.9 or later
-- sys-botbase running on the Switch, with the Switch and computer on the same
-  reachable network
+- Node.js and Corepack (the project uses Yarn 4.18.1).
+- A computer and Nintendo Switch on the same local network.
+- sys-botbase running on the Switch, with ACNH open.
 
-## Run locally
+The injector uses version-specific ACNH memory addresses. Confirm they match your game version before applying an inventory. Item images are loaded from the Catalogue AC CDN and require an internet connection.
 
-Install and start the API in one terminal:
-
-```sh
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r backend/requirements.txt
-cd backend
-uvicorn main:app --host 0.0.0.0 --port 8000
-```
-
-Install and start the web app in another terminal:
+## Development
 
 ```sh
-cd frontend
-npm install
-npm run dev
+git clone https://github.com/TheDeadGPU/ACNH-Pocket-Poke.git
+cd ACNH-Pocket-Poke
+corepack yarn install
+corepack yarn dev
 ```
 
-Open <http://localhost:3000>, enter the Switch's LAN IP address and sys-botbase
-port (6000 by default), choose a player, and build the inventory. The API URL
-defaults to `http://localhost:8000`; set `POCKET_POKE_URL` in the frontend
-environment if the API is hosted elsewhere.
+`corepack yarn dev` starts the Electron application in development mode and opens the developer tools.
 
-**Applying an inventory replaces all 40 pocket slots for the selected player.**
-Any empty slot in the editor is sent as empty and clears that slot on the Switch.
+## Using the app
 
-The API only accepts private/LAN IP addresses. Do not expose it to the public
-internet.
+1. Enter the Switch's local IP address. The app only accepts private/LAN addresses.
+2. Leave the sys-botbase port at `6000` unless you have configured a different port.
+3. Choose player 1–8, select an inventory slot, then search or filter for an item and set its quantity.
+4. Repeat for the slots you want to fill, then choose **Replace Switch inventory** and confirm.
+
+Applying replaces all 40 pocket slots for the selected player. Empty slots in the editor are cleared on the Switch. The status indicator checks the entered IP and port periodically; inventory writes currently use sys-botbase's default port, `6000`.
+
+## Commands
+
+| Command | Description |
+| --- | --- |
+| `corepack yarn dev` | Run the app in development mode |
+| `corepack yarn build` | Build the Electron application |
+
+## Project structure
+
+- `main/` — Electron main process, sys-botbase client, ACNH memory access, and IPC handlers.
+- `renderer/` — Next.js/React interface, inventory editor, and bundled item data.
+- `shared/` — Types shared between Electron, preload, and the renderer.
